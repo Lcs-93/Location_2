@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vehicle Details{% endblock %}
+
+{% block body %}
+    <h1>Vehicle Details</h1>
+
+    <table>
+        <tr>
+            <th>Brand</th>
+            <td>{{ vehicle.brand }}</td>
+        </tr>
+        <tr>
+            <th>Registration</th>
+            <td>{{ vehicle.registration }}</td>
+        </tr>
+        <tr>
+            <th>Daily Price</th>
+            <td>{{ vehicle.dailyPrice }} €</td>
+        </tr>
+        <tr>
+            <th>Availability</th>
+            <td>{{ vehicle.availability ? 'Available' : 'Not Available' }}</td>
+        </tr>
+    </table>
+
+    <a href="{{ path('vehicle_edit', {'id': vehicle.id}) }}">Edit</a> |
+    <form action="{{ path('vehicle_delete', {'id': vehicle.id}) }}" method="post" style="display:inline;">
+        <button type="submit">Delete</button>
+    </form>
+
+    <a href="{{ path('vehicle_index') }}">Back to Vehicle List</a>
+{% endblock %}

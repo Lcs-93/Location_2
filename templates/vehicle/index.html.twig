@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vehicle List{% endblock %}
+
+{% block body %}
+    <h1>Vehicle List</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Brand</th>
+                <th>Registration</th>
+                <th>Daily Price</th>
+                <th>Availability</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vehicle in vehicles %}
+                <tr>
+                    <td>{{ vehicle.brand }}</td>
+                    <td>{{ vehicle.registration }}</td>
+                    <td>{{ vehicle.dailyPrice }} €</td>
+                    <td>{{ vehicle.availability ? 'Available' : 'Not Available' }}</td>
+                    <td>
+                        <a href="{{ path('vehicle_show', {'id': vehicle.id}) }}">View</a> |
+                        <a href="{{ path('vehicle_edit', {'id': vehicle.id}) }}">Edit</a> |
+                        <form action="{{ path('vehicle_delete', {'id': vehicle.id}) }}" method="post" style="display:inline;">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">No vehicles found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('vehicle_new') }}">Create New Vehicle</a>
+{% endblock %}

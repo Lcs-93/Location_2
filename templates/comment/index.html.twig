@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Comments{% endblock %}
+
+{% block body %}
+    <h1>Comments</h1>
+
+    <a href="{{ path('comment_create', {'vehicleId': vehicle.id}) }}" class="btn btn-primary">Add a Comment</a>
+
+    <div class="comments-list">
+        {% for comment in comments %}
+            <div class="comment">
+                <p><strong>{{ comment.user.username }}</strong> - {{ comment.createdAt|date('Y-m-d H:i') }}</p>
+                <p>{{ comment.content }}</p>
+
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('comment_edit', {'id': comment.id}) }}" class="btn btn-warning">Edit</a>
+                    <form action="{{ path('comment_delete', {'id': comment.id}) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% else %}
+            <p>No comments yet.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

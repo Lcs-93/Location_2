@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Make a Reservation{% endblock %}
+
+{% block body %}
+    <h1>Make a Reservation</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.vehicle) }}
+        {{ form_row(form.startDate) }}
+        {{ form_row(form.endDate) }}
+        {{ form_row(form.status) }}
+        <button type="submit" class="btn btn-primary">Confirm Reservation</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('reservation_index') }}" class="btn btn-secondary">Back to Reservations</a>
+{% endblock %}

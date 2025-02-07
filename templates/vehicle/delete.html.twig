@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Delete Vehicle{% endblock %}
+
+{% block body %}
+    <h1>Are you sure you want to delete this vehicle?</h1>
+
+    <p>Brand: {{ vehicle.brand }}</p>
+    <p>Registration: {{ vehicle.registration }}</p>
+
+    <form action="{{ path('vehicle_delete', {'id': vehicle.id}) }}" method="post">
+        <button type="submit">Yes, delete</button>
+    </form>
+
+    <a href="{{ path('vehicle_index') }}">No, go back to Vehicle List</a>
+{% endblock %}

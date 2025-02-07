@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block body %}
+    <h1>Edit User</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.password) }}
+        {{ form_row(form.confirmPassword) }}
+        <button type="submit">Update User</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('user_list') }}">Back to User List</a>
+{% endblock %}

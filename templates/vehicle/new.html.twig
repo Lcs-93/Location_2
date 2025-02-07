@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Vehicle{% endblock %}
+
+{% block body %}
+    <h1>Create Vehicle</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.brand) }}
+        {{ form_row(form.registration) }}
+        {{ form_row(form.dailyPrice) }}
+        {{ form_row(form.availability) }}
+        <button type="submit">Create Vehicle</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('vehicle_index') }}">Back to Vehicle List</a>
+{% endblock %}
