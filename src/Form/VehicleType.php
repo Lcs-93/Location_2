@@ -26,11 +26,11 @@ class VehicleType extends AbstractType
                 'label' => 'Immatriculation',
                 'required' => true,
             ])
-            ->add('pricePerDay', NumberType::class, [
+            ->add('dailyPrice', NumberType::class, [
                 'label' => 'Prix par jour',
                 'required' => true,
             ])
-            ->add('isAvailable', CheckboxType::class, [
+            ->add('available', CheckboxType::class, [
                 'label' => 'Disponible',
                 'required' => false,
                 'data' => true, // Par défaut, le véhicule est disponible

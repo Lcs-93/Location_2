@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
@@ -28,23 +27,9 @@ class SecurityController extends AbstractController
         // Récupérer le dernier nom d'utilisateur saisi (si disponible)
         $lastUsername = $this->authenticationUtils->getLastUsername();
 
-        // Créer et gérer le formulaire personnalisé SecurityType
-        $form = $this->createForm(SecurityType::class, null, [
-            'action' => $this->generateUrl('app_login'),
-            'method' => 'POST',
-        ]);
-        
-        $form->handleRequest($request);
-
-        // Vérifier si le formulaire est soumis et valide
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Symfony gère la connexion automatiquement via le firewall
-        }
-
         return $this->render('security/login.html.twig', [
-            'form' => $form->createView(),
-            'error' => $error,
             'last_username' => $lastUsername,
+            'error' => $error,
         ]);
     }
 
@@ -54,3 +39,4 @@ class SecurityController extends AbstractController
         // Symfony gère la déconnexion automatiquement
     }
 }
+

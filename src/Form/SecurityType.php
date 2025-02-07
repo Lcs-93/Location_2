@@ -27,3 +27,4 @@ class SecurityType extends AbstractType
             ]);
     }
 }
+

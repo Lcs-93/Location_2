@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends '/home/index.html.twig' %}
 
 {% block title %}Vehicle List{% endblock %}
 
@@ -21,7 +21,7 @@
                     <td>{{ vehicle.brand }}</td>
                     <td>{{ vehicle.registration }}</td>
                     <td>{{ vehicle.dailyPrice }} €</td>
-                    <td>{{ vehicle.availability ? 'Available' : 'Not Available' }}</td>
+                    <td>{{ vehicle.available ? 'Available' : 'Not Available' }}</td>
                     <td>
                         <a href="{{ path('vehicle_show', {'id': vehicle.id}) }}">View</a> |
                         <a href="{{ path('vehicle_edit', {'id': vehicle.id}) }}">Edit</a> |

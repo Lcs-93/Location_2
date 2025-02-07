@@ -43,10 +43,12 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $plainPassword = $user->getPassword();
-            $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
-            $user->setPassword($hashedPassword);
-
+            $plainPassword = $user->getPlainPassword();
+            if ($plainPassword) {
+                $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
+                $user->setPassword($hashedPassword);
+            }
+            
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
@@ -75,13 +77,12 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('password')->getData()) {
-                $hashedPassword = $this->passwordHasher->hashPassword($user, $form->get('password')->getData());
+            if ($form->get('plainPassword')->getData()) {
+                $hashedPassword = $this->passwordHasher->hashPassword($user, $form->get('plainPassword')->getData());
                 $user->setPassword($hashedPassword);
             }
 
             $this->entityManager->flush();
-
             $this->addFlash('success', 'Utilisateur mis à jour avec succès !');
             return $this->redirectToRoute('user_list');
         }

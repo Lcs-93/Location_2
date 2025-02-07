@@ -1,21 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}User Details{% endblock %}
+{% block title %}Détails de l'utilisateur{% endblock %}
 
 {% block body %}
-    <h1>User Details</h1>
+    <h1>Détails de l'utilisateur</h1>
 
-    <table>
+    <table class="table">
         <tr>
             <th>Email</th>
             <td>{{ user.email }}</td>
         </tr>
         <tr>
-            <th>Password</th>
-            <td>{{ user.password }}</td>
-        </tr>
-        <tr>
-            <th>Roles</th>
+            <th>Rôles</th>
             <td>
                 {% for role in user.roles %}
                     {{ role }}<br>
@@ -24,10 +20,11 @@
         </tr>
     </table>
 
-    <a href="{{ path('user_edit', {'id': user.id}) }}">Edit</a> |
+    <a href="{{ path('user_edit', {'id': user.id}) }}" class="btn btn-warning">Modifier</a>
     <form action="{{ path('user_delete', {'id': user.id}) }}" method="post" style="display:inline;">
-        <button type="submit">Delete</button>
+        <button type="submit" class="btn btn-danger">Supprimer</button>
     </form>
 
-    <a href="{{ path('user_list') }}">Back to User List</a>
+    <a href="{{ path('user_list') }}" class="btn btn-secondary">Retour</a>
 {% endblock %}
+

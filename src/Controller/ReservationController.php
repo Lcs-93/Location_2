@@ -59,12 +59,12 @@ class ReservationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Calcul du prix total
-            $vehiclePricePerDay = $vehicle->getDailyPrice();
+            $vehicledailyPrice = $vehicle->getDailyPrice();
             $startDate = $reservation->getStartDate();
             $endDate = $reservation->getEndDate();
 
             $days = $endDate->diff($startDate)->days;
-            $totalPrice = $vehiclePricePerDay * $days;
+            $totalPrice = $vehicledailyPrice * $days;
 
             $reservation->setTotalPrice($totalPrice);
             $this->entityManager->persist($reservation);
@@ -121,10 +121,8 @@ class ReservationController extends AbstractController
 
         return $this->redirectToRoute('app_reservation_index');
     }
-
-    /**
-     * @Route("/reservation/{id}", name="app_reservation_show")
-     */
+    
+    #[Route('/reservation/{id}', name: 'app_reservation_show')]
     public function show(Reservation $reservation): Response
     {
         return $this->render('reservation/show.html.twig', [

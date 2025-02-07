@@ -5,18 +5,18 @@
 {% block body %}
     <h1>Reservations</h1>
 
-    <a href="{{ path('reservation_create') }}" class="btn btn-primary">Make a Reservation</a>
+    <a href="{{ path('app_reservation_index') }}" class="btn btn-primary">Make a Reservation</a>
 
     <div class="reservations-list">
         {% for reservation in reservations %}
             <div class="reservation">
-                <p><strong>{{ reservation.user.username }}</strong> - {{ reservation.vehicle.brand }} {{ reservation.vehicle.model }} ({{ reservation.vehicle.registration }})</p>
+                <p><strong>{{ reservation.user.email  }}</strong> - {{ reservation.vehicle.brand }} ({{ reservation.vehicle.registration }})</p>
                 <p>Date: {{ reservation.startDate|date('Y-m-d') }} to {{ reservation.endDate|date('Y-m-d') }}</p>
                 <p>Status: {{ reservation.status }}</p>
-
+                <p>Prix total: {{ reservation.totalPrice }}€</p>
                 {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{ path('reservation_edit', {'id': reservation.id}) }}" class="btn btn-warning">Edit</a>
-                    <form action="{{ path('reservation_delete', {'id': reservation.id}) }}" method="POST" style="display:inline;">
+                    <a href="{{ path('app_reservation_edit', {'id': reservation.id}) }}" class="btn btn-warning">Edit</a>
+                    <form action="{{ path('app_reservation_delete', {'id': reservation.id}) }}" method="POST" style="display:inline;">
                         <button type="submit" class="btn btn-danger">Cancel</button>
                     </form>
                 {% endif %}

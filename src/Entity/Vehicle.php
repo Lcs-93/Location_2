@@ -86,12 +86,12 @@ class Vehicle
         return $this;
     }
 
-    public function isAvailable(): ?bool
+    public function getAvailable(): ?bool
     {
         return $this->available;
     }
 
-    public function setAvailable(bool $available): static
+    public function setAvailable(bool $available): self
     {
         $this->available = $available;
 

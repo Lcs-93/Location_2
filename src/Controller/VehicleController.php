@@ -33,7 +33,7 @@ class VehicleController extends AbstractController
                 ->setParameter('brand', '%' . $brandFilter . '%');
         }
         if ($priceFilter) {
-            $vehiclesQuery->andWhere('v.pricePerDay <= :price')
+            $vehiclesQuery->andWhere('v.dailyPrice <= :price')
                 ->setParameter('price', $priceFilter);
         }
         if ($availabilityFilter) {

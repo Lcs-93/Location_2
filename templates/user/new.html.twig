@@ -1,16 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Create User{% endblock %}
+{% block title %}Créer un utilisateur{% endblock %}
 
 {% block body %}
-    <h1>Create User</h1>
+    <h1>Créer un utilisateur</h1>
 
     {{ form_start(form) }}
         {{ form_row(form.email) }}
         {{ form_row(form.password) }}
-        {{ form_row(form.confirmPassword) }}
-        <button type="submit">Create User</button>
+        <button type="submit" class="btn btn-primary">Créer</button>
     {{ form_end(form) }}
 
-    <a href="{{ path('user_list') }}">Back to User List</a>
+    <a href="{{ path('user_list') }}" class="btn btn-secondary">Retour</a>
 {% endblock %}
+

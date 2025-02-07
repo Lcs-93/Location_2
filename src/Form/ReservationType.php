@@ -11,13 +11,13 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 class ReservationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('vehicle', TextType::class, [
+            ->add('vehicle', EntityType::class, [
                 'label' => 'Véhicule',
                 'mapped' => false,
                 'data' => $options['vehicle']->getBrand(), // Affiche la marque du véhicule
