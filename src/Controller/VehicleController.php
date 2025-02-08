@@ -19,35 +19,44 @@ class VehicleController extends AbstractController
     #[Route('/vehicles', name: 'vehicle_index')]
     public function index(Request $request, EntityManagerInterface $em): Response
     {
-        // Récupérer les paramètres de filtre de la requête
-        $brandFilter = $request->query->get('brand');
-        $priceFilter = $request->query->get('price');
-        $availabilityFilter = $request->query->get('availability');
-
-        // Créer la requête de base pour récupérer les véhicules
-        $vehiclesQuery = $em->getRepository(Vehicle::class)->createQueryBuilder('v');
-
-        // Appliquer les filtres si définis
-        if ($brandFilter) {
-            $vehiclesQuery->andWhere('v.brand LIKE :brand')
-                ->setParameter('brand', '%' . $brandFilter . '%');
+        // Récupérer les paramètres de filtre depuis la requête GET
+        $brandFilter = $request->query->get('brand');       // ex: ?brand=Toyota
+        $maxPriceFilter = $request->query->get('maxPrice'); // ex: ?maxPrice=50
+        $availFilter = $request->query->get('avail');       // ex: ?avail=1 ou ?avail=0
+    
+        // Construire la requête de base pour récupérer les véhicules
+        $qb = $em->getRepository(Vehicle::class)->createQueryBuilder('v');
+    
+        // Filtre par marque
+        if (!empty($brandFilter)) {
+            $qb->andWhere('v.brand LIKE :brand')
+               ->setParameter('brand', '%' . $brandFilter . '%');
         }
-        if ($priceFilter) {
-            $vehiclesQuery->andWhere('v.dailyPrice <= :price')
-                ->setParameter('price', $priceFilter);
+    
+        // Filtre par prix maximum
+        if (!empty($maxPriceFilter)) {
+            $qb->andWhere('v.dailyPrice <= :price')
+               ->setParameter('price', $maxPriceFilter);
         }
-        if ($availabilityFilter) {
-            $vehiclesQuery->andWhere('v.isAvailable = :availability')
-                ->setParameter('availability', (bool) $availabilityFilter);
+    
+        // Filtre par disponibilité
+        // On vérifie si 'avail' est bien défini dans l'URL (peut être '0', '1', ou vide)
+        if ($availFilter !== null && $availFilter !== '') {
+            $isAvailable = (bool) $availFilter; // '1' => true, '0' => false
+            // Attention à la propriété dans l'entité : 'available' ou 'isAvailable'
+            $qb->andWhere('v.available = :avail')
+               ->setParameter('avail', $isAvailable);
         }
-
-        $vehicles = $vehiclesQuery->getQuery()->getResult();
-
+    
+        // Exécuter la requête et obtenir le résultat
+        $vehicles = $qb->getQuery()->getResult();
+    
+        // Renvoyer la vue avec les filtres pour les réafficher dans le formulaire
         return $this->render('vehicle/index.html.twig', [
             'vehicles' => $vehicles,
             'brandFilter' => $brandFilter,
-            'priceFilter' => $priceFilter,
-            'availabilityFilter' => $availabilityFilter
+            'maxPriceFilter' => $maxPriceFilter,
+            'availFilter' => $availFilter,
         ]);
     }
 

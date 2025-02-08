@@ -3,15 +3,36 @@
 {% block title %}Edit Reservation{% endblock %}
 
 {% block body %}
-    <h1>Edit Reservation</h1>
+<div class="container mt-4">
+    <h1 class="mb-4">Edit Reservation</h1>
+
+    <p><strong>Vehicle:</strong>
+        {% if reservation.vehicle %}
+            {{ reservation.vehicle.brand }} ({{ reservation.vehicle.registration }})
+        {% else %}
+            <span class="text-danger">Vehicle not found</span>
+        {% endif %}
+    </p>
+    <p><strong>Price per day:</strong>
+        {% if reservation.vehicle %}
+            {{ reservation.vehicle.dailyPrice }} €
+        {% else %}
+            --
+        {% endif %}
+    </p>
 
     {{ form_start(form) }}
-        {{ form_row(form.vehicle) }}
-        {{ form_row(form.startDate) }}
-        {{ form_row(form.endDate) }}
-        {{ form_row(form.status) }}
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <div class="mb-3">
+            {{ form_label(form.startDate) }}
+            {{ form_widget(form.startDate, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="mb-3">
+            {{ form_label(form.endDate) }}
+            {{ form_widget(form.endDate, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        
     {{ form_end(form) }}
 
-    <a href="{{ path('app_reservation_index') }}" class="btn btn-secondary">Back to Reservations</a>
+    <a href="{{ path('app_reservation_index') }}" class="btn btn-secondary mt-3">Back</a>
+</div>
 {% endblock %}

@@ -1,14 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Add a Comment{% endblock %}
+{% block title %}Nouveau commentaire{% endblock %}
 
 {% block body %}
-    <h1>Add a Comment</h1>
+<div class="container mt-5" style="max-width: 600px;">
+    <h1 class="mb-4 text-center">Nouveau commentaire pour {{ vehicle.brand }}</h1>
 
-    {{ form_start(form) }}
-        {{ form_row(form.content) }}
-        <button type="submit" class="btn btn-primary">Submit</button>
-    {{ form_end(form) }}
+    <div class="card p-4 shadow-sm">
+        {{ form_start(form) }}
+            <div class="mb-3">
+                {{ form_label(form.rating, 'Note (1 à 5)', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.rating, {
+                    'attr': {
+                        'class': 'form-control',
+                        'min': 1,
+                        'max': 5
+                    }
+                }) }}
+            </div>
 
-    <a href="{{ path('comment_index', {'vehicleId': vehicle.id}) }}" class="btn btn-secondary">Back to comments</a>
+            <div class="mb-3">
+                {{ form_label(form.content, 'Commentaire', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.content, {
+                    'attr': {
+                        'class': 'form-control',
+                        'rows': 4,
+                        'placeholder': 'Tapez votre commentaire ici...'
+                    }
+                }) }}
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Publier</button>
+        {{ form_end(form) }}
+    </div>
+
+    <div class="text-center mt-3">
+        <a href="{{ path('vehicle_comments', {'id': vehicle.id}) }}" class="btn btn-secondary">
+            Annuler
+        </a>
+    </div>
+</div>
 {% endblock %}
+

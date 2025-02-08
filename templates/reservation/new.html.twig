@@ -1,17 +1,30 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Make a Reservation{% endblock %}
+{% block title %}New Reservation{% endblock %}
 
 {% block body %}
-    <h1>Make a Reservation</h1>
+<div class="container mt-4">
+    <h1 class="mb-4">New Reservation</h1>
+
+    {% if vehicle %}
+        <p><strong>Vehicle:</strong> {{ vehicle.brand }} ({{ vehicle.registration }})</p>
+        <p><strong>Price per day:</strong> {{ vehicle.dailyPrice }} €</p>
+    {% else %}
+        <div class="alert alert-danger">Vehicle not found.</div>
+    {% endif %}
 
     {{ form_start(form) }}
-        {{ form_row(form.vehicle) }}
-        {{ form_row(form.startDate) }}
-        {{ form_row(form.endDate) }}
-        {{ form_row(form.status) }}
-        <button type="submit" class="btn btn-primary">Confirm Reservation</button>
+        <div class="mb-3">
+            {{ form_label(form.startDate) }}
+            {{ form_widget(form.startDate, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="mb-3">
+            {{ form_label(form.endDate) }}
+            {{ form_widget(form.endDate, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        
     {{ form_end(form) }}
 
-    <a href="{{ path('app_reservation_index') }}" class="btn btn-secondary">Back to Reservations</a>
+    <a href="{{ path('app_reservation_index') }}" class="btn btn-secondary mt-3">Back</a>
+</div>
 {% endblock %}

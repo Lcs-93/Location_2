@@ -3,31 +3,44 @@
 {% block title %}Vehicle Details{% endblock %}
 
 {% block body %}
-    <h1>Vehicle Details</h1>
+    <div class="container mt-4">
+        <h1>Vehicle Details</h1>
 
-    <table>
-        <tr>
-            <th>Brand</th>
-            <td>{{ vehicle.brand }}</td>
-        </tr>
-        <tr>
-            <th>Registration</th>
-            <td>{{ vehicle.registration }}</td>
-        </tr>
-        <tr>
-            <th>Daily Price</th>
-            <td>{{ vehicle.dailyPrice }} €</td>
-        </tr>
-        <tr>
-            <th>Availability</th>
-            <td>{{ vehicle.available ? 'Available' : 'Not Available' }}</td>
-        </tr>
-    </table>
+        <table class="table">
+            <tr>
+                <th>Brand</th>
+                <td>{{ vehicle.brand }}</td>
+            </tr>
+            <tr>
+                <th>Registration</th>
+                <td>{{ vehicle.registration }}</td>
+            </tr>
+            <tr>
+                <th>Price per Day</th>
+                <td>{{ vehicle.dailyPrice }} €</td>
+            </tr>
+            <tr>
+                <th>Availability</th>
+                <td>
+                    {% if vehicle.available %}
+                        <span class="text-success">Available</span>
+                    {% else %}
+                        <span class="text-danger">Not Available</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
 
-    <a href="{{ path('vehicle_edit', {'id': vehicle.id}) }}">Edit</a> |
-    <form action="{{ path('vehicle_delete', {'id': vehicle.id}) }}" method="post" style="display:inline;">
-        <button type="submit">Delete</button>
-    </form>
+        <!-- Bouton Retour -->
+        <a href="{{ path('vehicle_index') }}" class="btn btn-secondary">Back to Vehicles</a>
 
-    <a href="{{ path('vehicle_index') }}">Back to Vehicle List</a>
+        {% if is_granted('ROLE_ADMIN') %}
+            <!-- Boutons Modifier et Supprimer (Seulement pour les admins) -->
+            <a href="{{ path('vehicle_edit', {'id': vehicle.id}) }}" class="btn btn-warning">Edit</a>
+            <form action="{{ path('vehicle_delete', {'id': vehicle.id}) }}" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        {% endif %}
+    </div>
 {% endblock %}
+

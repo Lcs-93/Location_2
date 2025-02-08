@@ -22,11 +22,8 @@ class RegistrationType extends AbstractType
             ->add('password', PasswordType::class, [
                 'label' => 'Mot de passe',
                 'attr' => ['placeholder' => 'Entrez un mot de passe']
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'S\'inscrire',
-                'attr' => ['class' => 'btn btn-primary']
             ]);
+       
     }
 
     public function configureOptions(OptionsResolver $resolver): void

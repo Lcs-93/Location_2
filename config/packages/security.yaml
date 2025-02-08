@@ -10,7 +10,7 @@ security:
 
     firewalls:
         dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            pattern: ^/(_(profiler|wdt)|css|images|js)/ 
             security: false
 
         main:
@@ -19,11 +19,11 @@ security:
             form_login:
                 login_path: app_login  # Route pour afficher le formulaire de connexion
                 check_path: app_login  # Route pour soumettre les identifiants
-                default_target_path: home  # Redirection après connexion
+                default_target_path: vehicle_index  # 🔥 Après connexion, redirige vers les véhicules
                 always_use_default_target_path: false
             logout:
                 path: app_logout  # Route pour la déconnexion
-                target: app_login  # Redirection après déconnexion
+                target: app_login  # 🔥 Après déconnexion, redirige vers la page de connexion
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 7 jours
@@ -38,12 +38,8 @@ security:
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/profil, roles: ROLE_USER }
         - { path: ^/logout, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/vehicles, roles: IS_AUTHENTICATED_FULLY }  # 🔥 Sécurise la page des véhicules
+        - { path: ^/reservations, roles: IS_AUTHENTICATED_FULLY }  # 🔥 Sécurise les réservations
+        - { path: ^/user, roles: ROLE_ADMIN }  # 🔥 Seuls les admins voient les utilisateurs
+        - { path: ^/, roles: PUBLIC_ACCESS }  # 🔥 Accès public uniquement à la page de connexion
 
-when@test:
-    security:
-        password_hashers:
-            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
-                algorithm: auto
-                cost: 4
-                time_cost: 3
-                memory_cost: 10

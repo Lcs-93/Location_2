@@ -3,26 +3,71 @@
 {% block title %}Reservations{% endblock %}
 
 {% block body %}
-    <h1>Reservations</h1>
+<div class="container mt-4">
+    <h1 class="mb-4">Reservations</h1>
 
-    <a href="{{ path('app_reservation_index') }}" class="btn btn-primary">Make a Reservation</a>
-
-    <div class="reservations-list">
-        {% for reservation in reservations %}
-            <div class="reservation">
-                <p><strong>{{ reservation.user.email  }}</strong> - {{ reservation.vehicle.brand }} ({{ reservation.vehicle.registration }})</p>
-                <p>Date: {{ reservation.startDate|date('Y-m-d') }} to {{ reservation.endDate|date('Y-m-d') }}</p>
-                <p>Status: {{ reservation.status }}</p>
-                <p>Prix total: {{ reservation.totalPrice }}€</p>
-                {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{ path('app_reservation_edit', {'id': reservation.id}) }}" class="btn btn-warning">Edit</a>
-                    <form action="{{ path('app_reservation_delete', {'id': reservation.id}) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-danger">Cancel</button>
-                    </form>
-                {% endif %}
-            </div>
-        {% else %}
-            <p>No reservations yet.</p>
-        {% endfor %}
+    <div class="text-end mb-3">
+        <a href="{{ path('vehicle_index') }}" class="btn btn-primary">Make a Reservation</a>
     </div>
+
+    {% if reservations is empty %}
+        <div class="alert alert-warning text-center">
+            No reservations found.
+        </div>
+    {% else %}
+        <table class="table table-striped text-center">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Vehicle</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Total Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in reservations %}
+                    {% set isOwner = (reservation.user == app.user) %}
+                    {% set isAdmin = is_granted('ROLE_ADMIN') %}
+                    
+                    {# Convertir dates en timestamp #}
+                    {% set nowTimestamp = 'now'|date('U') %}
+                    {% set startTimestamp = reservation.startDate|date('U') %}
+
+                    <tr>
+                        <td>{{ reservation.user.email }}</td>
+                        <td>
+                            {% if reservation.vehicle %}
+                                {{ reservation.vehicle.brand }} ({{ reservation.vehicle.registration }})
+                            {% else %}
+                                <span class="text-danger">Vehicle not found</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ reservation.startDate|date('Y-m-d') }}</td>
+                        <td>{{ reservation.endDate|date('Y-m-d') }}</td>
+                        <td>{{ reservation.totalPrice }} €</td>
+                        <td>
+                            {# Condition: user est propriétaire OU admin #}
+                            {% if isOwner or isAdmin %}
+                                {# Si admin, on lui laisse tout faire. Sinon, on vérifie la date de début #}
+                                {% if isAdmin or startTimestamp > nowTimestamp %}
+                                    <a href="{{ path('app_reservation_edit', {'id': reservation.id}) }}" class="btn btn-warning btn-sm">Edit</a>
+                                    <form action="{{ path('app_reservation_delete', {'id': reservation.id}) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Cancel</button>
+                                    </form>
+                                {% else %}
+                                    <span class="badge bg-secondary">Already started</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge bg-secondary">No access</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
 {% endblock %}
+

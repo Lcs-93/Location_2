@@ -3,23 +3,47 @@
 {% block title %}Login{% endblock %}
 
 {% block body %}
-    <h1>Login</h1>
+<div class="container mt-5" style="max-width: 400px;">
+    <h1 class="mb-4 text-center">Login</h1>
 
-    <form action="{{ path('app_login') }}" method="post">
-        <div>
-            <label for="username">Email</label>
-            <input type="text" id="username" name="_username" value="{{ last_username }}" required autofocus />
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error.messageKey|trans(error.messageData, 'security') }}
+        </div>
+    {% endif %}
+
+    <form action="{{ path('app_login') }}" method="post" class="card p-4 shadow-sm">
+        <div class="mb-3">
+            <label for="username" class="form-label">Email</label>
+            <input
+                type="text"
+                id="username"
+                name="_username"
+                value="{{ last_username }}"
+                required
+                autofocus
+                class="form-control"
+                placeholder="Enter your email"
+            />
         </div>
 
-        <div>
-            <label for="password">Password</label>
-            <input type="password" id="password" name="_password" required />
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="_password"
+                required
+                class="form-control"
+                placeholder="Enter your password"
+            />
         </div>
 
-        <div>
-            <button type="submit">Login</button>
-        </div>
+        <button type="submit" class="btn btn-primary w-100">Login</button>
     </form>
 
-    <a href="{{ path('app_register') }}">Don't have an account? Register here.</a>
+    <div class="text-center mt-3">
+        <a href="{{ path('app_register') }}">Don't have an account? Register here.</a>
+    </div>
+</div>
 {% endblock %}

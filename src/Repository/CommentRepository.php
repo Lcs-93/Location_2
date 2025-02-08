@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Repository;
-
+use App\Entity\Vehicle;
 use App\Entity\Comment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -15,7 +15,15 @@ class CommentRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Comment::class);
     }
-    
+    public function getAverageRatingForVehicle(Vehicle $vehicle): ?float
+{
+    return $this->createQueryBuilder('c')
+        ->select('AVG(c.rating) as avgRating')
+        ->andWhere('c.vehicle = :vehicle')
+        ->setParameter('vehicle', $vehicle)
+        ->getQuery()
+        ->getSingleScalarResult();
+}
     //    /**
     //     * @return Comment[] Returns an array of Comment objects
     //     */

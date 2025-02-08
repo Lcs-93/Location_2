@@ -1,16 +1,38 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier un utilisateur{% endblock %}
+{% block title %}Modifier l'utilisateur{% endblock %}
 
 {% block body %}
-    <h1>Modifier l'utilisateur</h1>
+<div class="container mt-5" style="max-width: 400px;">
+    <h1 class="mb-4 text-center">Modifier l'utilisateur</h1>
 
-    {{ form_start(form) }}
-        {{ form_row(form.email) }}
-        {{ form_row(form.password) }}
-        <button type="submit" class="btn btn-primary">Mettre à jour</button>
-    {{ form_end(form) }}
+    <div class="card p-4 shadow-sm">
+        {{ form_start(form) }}
+            <div class="mb-3">
+                {{ form_label(form.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.email, {
+                    'attr': {
+                        'class': 'form-control'
+                    }
+                }) }}
+            </div>
 
-    <a href="{{ path('user_list') }}" class="btn btn-secondary">Retour</a>
+            <div class="mb-3">
+                {{ form_label(form.plainPassword, 'Nouveau mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.plainPassword, {
+                    'attr': {
+                        'class': 'form-control',
+                        'placeholder': 'Laisser vide pour ne pas changer'
+                    }
+                }) }}
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Enregistrer</button>
+        {{ form_end(form) }}
+    </div>
+
+    <div class="text-center mt-3">
+        <a href=\"{{ path('user_list') }}\" class=\"btn btn-secondary\">Retour</a>
+    </div>
+</div>
 {% endblock %}
-

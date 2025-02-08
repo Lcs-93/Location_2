@@ -34,10 +34,8 @@ class VehicleType extends AbstractType
                 'label' => 'Disponible',
                 'required' => false,
                 'data' => true, // Par défaut, le véhicule est disponible
-            ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Enregistrer',
             ]);
+           
     }
 
     public function configureOptions(OptionsResolver $resolver)
