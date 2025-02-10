@@ -33,7 +33,7 @@ class VehicleType extends AbstractType
             ->add('available', CheckboxType::class, [
                 'label' => 'Disponible',
                 'required' => false,
-                'data' => true, // Par défaut, le véhicule est disponible
+                'disabled' => $options['data']->isCurrentlyReserved(), // Par défaut, le véhicule est disponible
             ]);
            
     }

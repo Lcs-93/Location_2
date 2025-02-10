@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use App\Repository\ReservationRepository;
+use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,7 +21,7 @@ class UserController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
     private UserPasswordHasherInterface $passwordHasher;
-    
+
     public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
     {
         $this->entityManager = $entityManager;
@@ -48,7 +50,7 @@ class UserController extends AbstractController
                 $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
                 $user->setPassword($hashedPassword);
             }
-            
+
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
@@ -95,8 +97,25 @@ class UserController extends AbstractController
 
     #[Route('/{id}/delete', name: 'user_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function delete(User $user): Response
+    public function delete(User $user, ReservationRepository $reservationRepository, CommentRepository $commentRepository): Response
     {
+        // Vérifier si l'utilisateur a des réservations actives
+        $activeReservations = $reservationRepository->findBy(['user' => $user]);
+
+        if (!empty($activeReservations)) {
+            $this->addFlash('error', 'Cet utilisateur ne peut pas être supprimé car il a des réservations en cours.');
+            return $this->redirectToRoute('user_list');
+        }
+
+        // Vérifier si l'utilisateur a laissé des commentaires
+        $userComments = $commentRepository->findBy(['user' => $user]);
+
+        if (!empty($userComments)) {
+            $this->addFlash('error', 'Cet utilisateur ne peut pas être supprimé car il a laissé des commentaires.');
+            return $this->redirectToRoute('user_list');
+        }
+
+        // Suppression autorisée
         $this->entityManager->remove($user);
         $this->entityManager->flush();
 

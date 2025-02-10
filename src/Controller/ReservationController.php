@@ -60,46 +60,105 @@ class ReservationController extends AbstractController
      * Crée une nouvelle réservation pour un véhicule donné
      */
     #[Route('/reservation/new/{id}', name: 'app_reservation_new', requirements: ['id' => '\d+'])]
-    public function new(int $id, Request $request): Response
+    public function new(int $id, Request $request, ReservationRepository $reservationRepository): Response
     {
         $user = $this->getUser();
+    
         // Vérification du rôle USER
         if (!$user || !in_array('ROLE_USER', $user->getRoles())) {
             throw new AccessDeniedException("Vous devez être connecté en tant que client pour faire une réservation.");
         }
-
+    
         // Récupérer le véhicule
         $vehicle = $this->vehicleRepository->find($id);
         if (!$vehicle) {
             throw $this->createNotFoundException("Véhicule non trouvé.");
         }
-
+    
+        // Vérifier si le véhicule est disponible à la réservation
+        if (!$vehicle->getAvailable()) {
+            $this->addFlash('error', "Ce véhicule n'est pas disponible à la réservation.");
+            return $this->redirectToRoute('vehicle_index');
+        }
+    
         $reservation = new Reservation();
         $reservation->setUser($user);
         $reservation->setVehicle($vehicle);
-
+        
+        
         // Formulaire
         $form = $this->createForm(ReservationType::class, $reservation);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
+            // Vérifier que la date de début < date de fin
+            if ($reservation->getStartDate() >= $reservation->getEndDate()) {
+                $this->addFlash('error', 'La date de début doit être antérieure à la date de fin.');
+                return $this->render('reservation/new.html.twig', [
+                    'form' => $form->createView(),
+                    'vehicle' => $vehicle,
+                ]);
+            }
+            if ($reservation->getStartDate() < new \DateTime()) {
+                $this->addFlash('error', 'Impossible de réserver un véhicule pour une date passée.');
+                return $this->render('reservation/new.html.twig', [
+                    'form' => $form->createView(),
+                    'vehicle' => $vehicle,
+                ]);
+            }
+            // Vérifier si le véhicule est déjà réservé pour ces dates
+            $existingReservations = $reservationRepository->createQueryBuilder('r')
+                ->where('r.vehicle = :vehicle')
+                ->andWhere(':startDate BETWEEN r.startDate AND r.endDate OR :endDate BETWEEN r.startDate AND r.endDate')
+                ->setParameter('vehicle', $vehicle)
+                ->setParameter('startDate', $reservation->getStartDate())
+                ->setParameter('endDate', $reservation->getEndDate())
+                ->getQuery()
+                ->getResult();
+    
+            if (!empty($existingReservations)) {
+                $this->addFlash('error', 'Ce véhicule est déjà réservé pour cette période.');
+                return $this->render('reservation/new.html.twig', [
+                    'form' => $form->createView(),
+                    'vehicle' => $vehicle,
+                ]);
+            }
+    
             // Calcul du prix total
             $days = $reservation->getEndDate()->diff($reservation->getStartDate())->days;
             $totalPrice = $vehicle->getDailyPrice() * $days;
+    
+            // Application de la réduction de 10% si le prix dépasse 400€
+            if ($totalPrice >= 400) {
+                $totalPrice *= 0.9; // Appliquer 10% de réduction
+                $this->addFlash('info', 'Une réduction de 10% a été appliquée car le total atteint 400€ ou plus.');
+            }
+    
             $reservation->setTotalPrice($totalPrice);
-
+    
+            // Enregistrement de la réservation
             $this->entityManager->persist($reservation);
             $this->entityManager->flush();
-
+    
             $this->addFlash('success', 'Votre réservation a été créée avec succès.');
             return $this->redirectToRoute('app_reservation_index');
         }
+        $existingReservations = $reservationRepository->findBy(['vehicle' => $vehicle]);
 
+            $reservedDates = [];
+            foreach ($existingReservations as $res) {
+            $reservedDates[] = [
+            'start' => $res->getStartDate()->format('Y-m-d'),
+            'end' => $res->getEndDate()->format('Y-m-d'),
+    ];
+}
         return $this->render('reservation/new.html.twig', [
             'form' => $form->createView(),
             'vehicle' => $vehicle,
+            'reservedDates' => $reservedDates,
         ]);
     }
+    
 
     /**
      * Éditer une réservation
@@ -118,6 +177,7 @@ class ReservationController extends AbstractController
             throw new AccessDeniedException("Vous ne pouvez pas modifier cette réservation.");
         }
 
+        // Vérifier que la résa n'a pas déjà commencé (si pas admin)
         if (!in_array('ROLE_ADMIN', $user->getRoles()) && $reservation->getStartDate() <= new \DateTime()) {
             $this->addFlash('error', 'La réservation a déjà commencé, vous ne pouvez plus la modifier.');
             return $this->redirectToRoute('app_reservation_index');
@@ -127,9 +187,27 @@ class ReservationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Vérifier date début < date fin
+            if ($reservation->getStartDate() >= $reservation->getEndDate()) {
+                $this->addFlash('error', 'La date de début doit être antérieure à la date de fin.');
+
+                // Réafficher le formulaire avec le message d'erreur
+                return $this->render('reservation/edit.html.twig', [
+                    'form' => $form->createView(),
+                    'reservation' => $reservation,
+                ]);
+            }
+
             // Recalcul du prix si nécessaire
             $days = $reservation->getEndDate()->diff($reservation->getStartDate())->days;
             $totalPrice = $reservation->getVehicle()->getDailyPrice() * $days;
+
+            // Application de la réduction si total >= 400
+            if ($totalPrice >= 400) {
+                $totalPrice *= 0.9; // réduction de 10%
+                $this->addFlash('info', 'Une réduction de 10% a été appliquée car le total atteint 400€ ou plus.');
+            }
+
             $reservation->setTotalPrice($totalPrice);
 
             $this->entityManager->flush();
@@ -161,10 +239,12 @@ class ReservationController extends AbstractController
             throw new AccessDeniedException("Vous ne pouvez pas annuler cette réservation.");
         }
 
+        // Vérifier que la résa n'a pas déjà commencé (si pas admin)
         if (!in_array('ROLE_ADMIN', $user->getRoles()) && $reservation->getStartDate() <= new \DateTime()) {
             $this->addFlash('error', 'La réservation a déjà commencé, vous ne pouvez plus l\'annuler.');
             return $this->redirectToRoute('app_reservation_index');
         }
+
         $this->entityManager->remove($reservation);
         $this->entityManager->flush();
 

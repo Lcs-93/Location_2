@@ -39,6 +39,15 @@ class Vehicle
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'vehicle')]
     private Collection $comments;
 
+    public function isCurrentlyReserved(): bool
+{
+    foreach ($this->reservations as $reservation) {
+        if ($reservation->getEndDate() > new \DateTime()) {
+            return true; // Une réservation en cours → Véhicule indisponible
+        }
+    }
+    return false;
+}
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
@@ -76,6 +85,7 @@ class Vehicle
 
     public function getDailyPrice(): ?float
     {
+        
         return $this->dailyPrice;
     }
 

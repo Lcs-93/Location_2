@@ -27,4 +27,19 @@
 
     <a href="{{ path('app_reservation_index') }}" class="btn btn-secondary mt-3">Back</a>
 </div>
+<div class="alert alert-info">
+    <h5>Dates déjà réservées pour ce véhicule :</h5>
+    {% if reservedDates is empty %}
+        <p>Aucune réservation pour ce véhicule.</p>
+    {% else %}
+        <ul>
+            {% for date in reservedDates %}
+                <li>Du <strong>{{ date.start }}</strong> au <strong>{{ date.end }}</strong></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+
 {% endblock %}
+
+

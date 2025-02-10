@@ -6,7 +6,7 @@
 <div class="container mt-4">
     <h1 class="mb-4 text-center">Vehicles</h1>
 
-    <!-- Formulaire de filtre (facultatif, si tu l'as implémenté) -->
+    <!-- Formulaire de filtre -->
     <form method="get" class="row g-3 mb-3">
         <div class="col-md-3">
             <label class="form-label">Marque</label>
@@ -25,7 +25,7 @@
                 name="maxPrice" 
                 value="{{ maxPriceFilter|default('') }}" 
                 class="form-control"
-                placeholder="ex: 50"
+                placeholder="ex: 500"
             >
         </div>
         <div class="col-md-3">
@@ -41,7 +41,7 @@
         </div>
     </form>
 
-    <!-- Bouton Add New Vehicle si ROLE_ADMIN -->
+    <!-- Bouton Ajouter un véhicule (admin uniquement) -->
     {% if is_granted('ROLE_ADMIN') %}
         <div class="text-end mb-3">
             <a href="{{ path('vehicle_new') }}" class="btn btn-success">
@@ -55,7 +55,6 @@
             <i class="fas fa-info-circle"></i> No vehicles found with current filters.
         </div>
         <div class="text-center mt-3">
-            <!-- Bouton pour réinitialiser les filtres -->
             <a href="{{ path('vehicle_index') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Back to Vehicle List
             </a>
@@ -69,6 +68,7 @@
                         <th>Registration</th>
                         <th>Price/Day</th>
                         <th>Availability</th>
+                        <th>Reservations</th> {# Nouvelle colonne #}
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -84,6 +84,9 @@
                             {% else %}
                                 <span class="badge bg-danger">Not Available</span>
                             {% endif %}
+                        </td>
+                        <td>
+                            {{ reservationMap[vehicle.id] | default(0) }} réservations
                         </td>
                         <td>
                             <!-- Voir (pour tous) -->
@@ -111,7 +114,7 @@
                                 </a>
                             {% endif %}
 
-                            <!-- Lien pour voir les commentaires du véhicule -->
+                            <!-- Voir les commentaires -->
                             <a href="{{ path('vehicle_comments', {'id': vehicle.id}) }}" class="btn btn-secondary btn-sm">
                                 <i class="fas fa-comments"></i> Comments
                             </a>

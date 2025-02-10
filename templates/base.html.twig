@@ -21,7 +21,7 @@
         }
         /* Le main grandit pour occuper l'espace restant */
         main {
-            flex: 1 0 auto; /* ou simply flex:1; */
+            flex: 1 0 auto; /* ou simplement flex:1; */
         }
         /* Le footer ne se pousse plus quand peu de contenu */
         footer {
@@ -36,7 +36,8 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="{{ path('vehicle_index') }}">Car Rental</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -74,6 +75,17 @@
 
     <!-- Contenu principal dans un <main> -->
     <main class="container mt-4">
+        <!-- Affichage des flash messages -->
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show"
+                     role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
         {% block body %}{% endblock %}
     </main>
 

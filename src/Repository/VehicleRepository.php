@@ -15,7 +15,15 @@ class VehicleRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Vehicle::class);
     }
-
+    public function getReservationCountForVehicles(): array
+{
+    return $this->createQueryBuilder('v')
+        ->select('v.id, COUNT(r.id) as reservationCount')
+        ->leftJoin('v.reservations', 'r')
+        ->groupBy('v.id')
+        ->getQuery()
+        ->getResult();
+}
     //    /**
     //     * @return Vehicle[] Returns an array of Vehicle objects
     //     */
