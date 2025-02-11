@@ -29,18 +29,91 @@
                     {% endif %}
                 </td>
             </tr>
+            <tr>
+                <th>Reservations</th>
+                <td>{{ reservationCount|default(0) }} réservations</td>
+            </tr>
         </table>
 
-        <!-- Bouton Retour -->
-        <a href="{{ path('vehicle_index') }}" class="btn btn-secondary">Back to Vehicles</a>
+        <!-- Affichage des images -->
+        <h3>Vehicle Images</h3>
+        <div class="row">
+            {% if vehicle.vehicleImages is not empty %}
+                {% for image in vehicle.vehicleImages %}
+                    <div class="col-md-3 mb-3 position-relative">
+                        <img src="{{ asset('uploads/vehicles/' ~ image.fileName) }}" alt="Vehicle Image" class="img-fluid img-thumbnail">
+                        
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <!-- Bouton de suppression d'image (admin uniquement) -->
+                            <form action="{{ path('vehicle_image_delete', {'id': image.id}) }}" method="POST" class="position-absolute top-0 end-0">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer cette image ?');">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No images available for this vehicle.</p>
+            {% endif %}
+        </div>
 
-        {% if is_granted('ROLE_ADMIN') %}
-            <!-- Boutons Modifier et Supprimer (Seulement pour les admins) -->
-            <a href="{{ path('vehicle_edit', {'id': vehicle.id}) }}" class="btn btn-warning">Edit</a>
-            <form action="{{ path('vehicle_delete', {'id': vehicle.id}) }}" method="POST" style="display:inline;">
-                <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
+        <!-- Bouton Ajouter aux favoris / Retirer des favoris -->
+        {% if is_granted('ROLE_USER') %}
+            {% set isFavorite = false %}
+            {% for favorite in app.user.favorites %}
+                {% if favorite.vehicle.id == vehicle.id %}
+                    {% set isFavorite = true %}
+                {% endif %}
+            {% endfor %}
+
+            {% if isFavorite %}
+                <a href="{{ path('remove_favorite', {'id': vehicle.id}) }}" class="btn btn-danger mt-3">
+                    <i class="fas fa-heart-broken"></i> Retirer des favoris
+                </a>
+            {% else %}
+                <a href="{{ path('add_favorite', {'id': vehicle.id}) }}" class="btn btn-outline-primary mt-3">
+                    <i class="fas fa-heart"></i> Ajouter aux favoris
+                </a>
+            {% endif %}
         {% endif %}
+
+        <!-- Section Véhicules Similaires -->
+        {% if not vehicle.available and similarVehicles is not empty %}
+            <h3 class="mt-4">Véhicules similaires disponibles</h3>
+            <div class="row">
+                {% for similar in similarVehicles %}
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <img src="{{ asset('uploads/vehicles/' ~ similar.vehicleImages[0].fileName) }}" 
+                                 class="card-img-top" alt="{{ similar.brand }}" 
+                                 style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ similar.brand }}</h5>
+                                <p class="card-text">
+                                    <strong>Prix :</strong> {{ similar.dailyPrice }} € / jour
+                                </p>
+                                <a href="{{ path('vehicle_show', {'id': similar.id}) }}" class="btn btn-primary">
+                                    Voir ce véhicule
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Boutons d'administration -->
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="mt-4">
+                <a href="{{ path('vehicle_edit', {'id': vehicle.id}) }}" class="btn btn-warning">Edit</a>
+                <form action="{{ path('vehicle_delete', {'id': vehicle.id}) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?');">Delete</button>
+                </form>
+            </div>
+        {% endif %}
+
+        <!-- Bouton Retour -->
+        <a href="{{ path('vehicle_index') }}" class="btn btn-secondary mt-3">Back to Vehicles</a>
     </div>
 {% endblock %}
-

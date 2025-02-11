@@ -34,5 +34,16 @@
     {{ form_end(form) }}
 
     <a href="{{ path('app_reservation_index') }}" class="btn btn-secondary mt-3">Back</a>
+
+    {% if reservedDates is defined and reservedDates|length > 0 %}
+    <div class="alert alert-warning">
+        <strong>Attention :</strong> Ce véhicule est déjà réservé aux dates suivantes :
+        <ul>
+            {% for date in reservedDates %}
+                <li>Du {{ date.start }} au {{ date.end }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
 </div>
 {% endblock %}

@@ -28,6 +28,24 @@
                     <button type="submit" class="btn btn-primary">Update Vehicle</button>
                 {{ form_end(form) }}
             </div>
+
+            <!-- Affichage des images existantes -->
+            {% if vehicle.vehicleImages is not empty %}
+                <div class="mt-4">
+                    <h5>Current Images:</h5>
+                    <div class="d-flex flex-wrap">
+                        {% for image in vehicle.vehicleImages %}
+                            <div class="position-relative m-2">
+                                <img src="{{ asset('uploads/vehicles/' ~ image.fileName) }}" class="img-thumbnail" width="150">
+                                <form method="post" action="{{ path('vehicle_image_delete', {'vehicleId': vehicle.id, 'imageId': image.id}) }}" style="position: absolute; top: 5px; right: 5px;">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cette image ?');">X</button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
         {% else %}
             <div class="alert alert-danger" role="alert">
                 You do not have permission to edit this vehicle.

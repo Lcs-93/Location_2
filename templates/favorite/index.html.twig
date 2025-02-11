@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Favoris{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Mes véhicules favoris</h1>
+
+    {% if favorites is empty %}
+        <div class="alert alert-warning text-center">Aucun véhicule dans vos favoris.</div>
+    {% else %}
+        <div class="row">
+            {% for favorite in favorites %}
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ favorite.vehicle.brand }}</h5>
+                            <p class="card-text">Prix: {{ favorite.vehicle.dailyPrice }} €/jour</p>
+                            <a href="{{ path('vehicle_show', {'id': favorite.vehicle.id}) }}" class="btn btn-info btn-sm">Voir</a>
+                            <a href="{{ path('remove_favorite', {'id': favorite.vehicle.id}) }}" class="btn btn-danger btn-sm">Retirer</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

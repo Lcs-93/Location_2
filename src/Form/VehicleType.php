@@ -12,6 +12,9 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\File;
 
 class VehicleType extends AbstractType
 {
@@ -34,6 +37,21 @@ class VehicleType extends AbstractType
                 'label' => 'Disponible',
                 'required' => false,
                 'disabled' => $options['data']->isCurrentlyReserved(), // Par défaut, le véhicule est disponible
+            ])
+            ->add('images', FileType::class, [
+                'label' => 'Images du véhicule',
+                'mapped' => false,
+                'multiple' => true,
+                'required' => false,
+                'constraints' => [
+                    new All([
+                        new File([
+                            'maxSize' => '5M',
+                            'mimeTypes' => ['image/jpeg', 'image/png'],
+                            'mimeTypesMessage' => 'Seules les images JPG et PNG sont autorisées.',
+                        ])
+                    ])
+                ],
             ]);
            
     }

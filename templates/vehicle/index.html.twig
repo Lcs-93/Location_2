@@ -68,7 +68,7 @@
                         <th>Registration</th>
                         <th>Price/Day</th>
                         <th>Availability</th>
-                        <th>Reservations</th> {# Nouvelle colonne #}
+                        <th>Reservations</th> {# Nombre de réservations #}
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -118,6 +118,25 @@
                             <a href="{{ path('vehicle_comments', {'id': vehicle.id}) }}" class="btn btn-secondary btn-sm">
                                 <i class="fas fa-comments"></i> Comments
                             </a>
+
+                            {% if is_granted('ROLE_USER') %}
+                                {% set isFavorite = false %}
+                                {% for favorite in app.user.favorites %}
+                                    {% if favorite.vehicle.id == vehicle.id %}
+                                        {% set isFavorite = true %}
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if isFavorite %}
+                                    <a href="{{ path('remove_favorite', {'id': vehicle.id}) }}" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-heart-broken"></i> Retirer des favoris
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('add_favorite', {'id': vehicle.id}) }}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-heart"></i> Ajouter aux favoris
+                                    </a>
+                                {% endif %}
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

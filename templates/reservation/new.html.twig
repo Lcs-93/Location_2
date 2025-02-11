@@ -29,15 +29,16 @@
 </div>
 <div class="alert alert-info">
     <h5>Dates déjà réservées pour ce véhicule :</h5>
-    {% if reservedDates is empty %}
-        <p>Aucune réservation pour ce véhicule.</p>
-    {% else %}
+    {% if reservedDates is defined and reservedDates|length > 0 %}
+    <div class="alert alert-warning">
+        <strong>Attention :</strong> Ce véhicule est déjà réservé aux dates suivantes :
         <ul>
             {% for date in reservedDates %}
-                <li>Du <strong>{{ date.start }}</strong> au <strong>{{ date.end }}</strong></li>
+                <li>Du {{ date.start }} au {{ date.end }}</li>
             {% endfor %}
         </ul>
-    {% endif %}
+    </div>
+{% endif %}
 </div>
 
 {% endblock %}

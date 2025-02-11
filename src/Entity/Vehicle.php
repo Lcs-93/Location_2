@@ -39,6 +39,18 @@ class Vehicle
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'vehicle')]
     private Collection $comments;
 
+    /**
+     * @var Collection<int, VehicleImage>
+     */
+    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: VehicleImage::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $vehicleImages;
+
+    /**
+     * @var Collection<int, Favorite>
+     */
+    #[ORM\OneToMany(targetEntity: Favorite::class, mappedBy: 'vehicle')]
+    private Collection $favorites;
+
     public function isCurrentlyReserved(): bool
 {
     foreach ($this->reservations as $reservation) {
@@ -52,6 +64,8 @@ class Vehicle
     {
         $this->reservations = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->vehicleImages = new ArrayCollection();
+        $this->favorites = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -162,6 +176,66 @@ class Vehicle
             // set the owning side to null (unless already changed)
             if ($comment->getVehicle() === $this) {
                 $comment->setVehicle(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, VehicleImage>
+     */
+    public function getVehicleImages(): Collection
+    {
+        return $this->vehicleImages;
+    }
+
+    public function addVehicleImage(VehicleImage $vehicleImage): static
+    {
+        if (!$this->vehicleImages->contains($vehicleImage)) {
+            $this->vehicleImages->add($vehicleImage);
+            $vehicleImage->setVehicle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVehicleImage(VehicleImage $vehicleImage): static
+    {
+        if ($this->vehicleImages->removeElement($vehicleImage)) {
+            // set the owning side to null (unless already changed)
+            if ($vehicleImage->getVehicle() === $this) {
+                $vehicleImage->setVehicle(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Favorite>
+     */
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    public function addFavorite(Favorite $favorite): static
+    {
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites->add($favorite);
+            $favorite->setVehicle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFavorite(Favorite $favorite): static
+    {
+        if ($this->favorites->removeElement($favorite)) {
+            // set the owning side to null (unless already changed)
+            if ($favorite->getVehicle() === $this) {
+                $favorite->setVehicle(null);
             }
         }
 
